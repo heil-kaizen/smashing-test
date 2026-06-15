@@ -132,11 +132,12 @@ async function extractFrames(url) {
 
 (async () => {
   const chars = [
-    {id: 'shiba', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Shiba-sprite.webp"},
-    {id: 'wojak', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Wojak-sprite.webp"},
-    {id: 'whale', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/whitewhale-sprite.webp"},
-    {id: 'troll', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Troll-sprite.webp"},
-    {id: 'alon', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Alon-sprite.webp"}
+    {id: 'shiba', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Shiba-sprite.webp"},
+    {id: 'wojak', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Wojak-sprite.webp"},
+    {id: 'whale', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/whitewhale-sprite.webp"},
+    {id: 'troll', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Troll-sprite.webp"},
+    {id: 'alon', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Alon-sprite.webp"},
+    {id: 'punch', url: "https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/punch-sprite.webp"}
   ];
   
   let result = {};

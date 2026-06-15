@@ -370,9 +370,10 @@ export class Game {
 
       // stock icons
       for (let s = 0; s < f.stocks; s++) {
-        ctx.fillStyle = f.char.palette.body;
-        const sx = isP1 ? (x + 10 + s * 12) : (x + boxW - 10 - s * 12 - 8);
-        ctx.fillRect(sx, y + 46, 8, 8);
+        ctx.fillStyle = '#ff4757'; // Red heart color
+        ctx.font = 'bold 14px monospace';
+        const sx = isP1 ? (x + 10 + s * 16) : (x + boxW - 20 - s * 16);
+        ctx.fillText('♥', sx, y + 54);
       }
     }
   }

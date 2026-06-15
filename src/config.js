@@ -116,9 +116,10 @@ function mk(o) {
 // SPRITE_FRAMES are now in frames.js
 export const CHARACTERS = [
   mk({
-    id: 'doge', name: 'DOGE',
+    id: 'punch', name: 'PUNCH',
     palette: { body: '#e8b558', accent: '#c9933b', eye: '#2b2b2b', trim: '#fff3d6' },
     weight: 105, speedMult: 1.0, jumpMult: 1.0, dmgMult: 1.0, special: 'dash',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/punch-sprite.webp',
     blurb: 'Such balance. Very fighter.',
   }),
   mk({
@@ -137,35 +138,35 @@ export const CHARACTERS = [
     id: 'wojak', name: 'WOJAK',
     palette: { body: '#dfe6ec', accent: '#b8c2cc', eye: '#2b2b2b', trim: '#9aa7b3' },
     weight: 100, speedMult: 1.0, jumpMult: 1.04, dmgMult: 1.0, special: 'projectile',
-    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Wojak-sprite.webp',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Wojak-sprite.webp',
     blurb: 'Just wants to fight.',
   }),
   mk({
     id: 'shiba', name: 'SHIBA',
     palette: { body: '#f0913a', accent: '#cf7322', eye: '#2b2b2b', trim: '#ffe0b8' },
     weight: 90, speedMult: 1.18, jumpMult: 1.1, dmgMult: 0.94, special: 'dash',
-    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Shiba-sprite.webp',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Shiba-sprite.webp',
     blurb: 'Quick lil floof.',
   }),
   mk({
     id: 'troll', name: 'TROLL',
     palette: { body: '#f2f2f2', accent: '#cfcfcf', eye: '#1a1a1a', trim: '#1a1a1a' },
     weight: 96, speedMult: 1.05, jumpMult: 1.0, dmgMult: 0.96, special: 'projectile',
-    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Troll-sprite.webp',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Troll-sprite.webp',
     blurb: 'Problem?',
   }),
   mk({
     id: 'whale', name: 'WHALE',
     palette: { body: '#ffffff', accent: '#bce4f5', eye: '#0b1626', trim: '#6fd2f5' },
     weight: 112, speedMult: 0.95, jumpMult: 1.0, dmgMult: 1.18, special: 'projectile',
-    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/whitewhale-sprite.webp',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/whitewhale-sprite.webp',
     blurb: 'Number go up.',
   }),
   mk({
     id: 'alon', name: 'ALON',
     palette: { body: '#ffffff', accent: '#cccccc', eye: '#111111', trim: '#999999' },
     weight: 90, speedMult: 1.15, jumpMult: 1.1, dmgMult: 0.95, special: 'projectile',
-    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Alon-sprite.webp',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/assets/chara%20assets%20sprite%20sheets/Alon-sprite.webp',
     blurb: 'Fast and versatile combatant.',
   }),
 ];
