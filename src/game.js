@@ -76,16 +76,20 @@ export class Game {
   // ==========================================================================
   update() {
     this.t++;
-    this.stage.update();
-    if (this.shakeAmt > 0) this.shakeAmt *= 0.85;
+
+    if (this.state !== 'PAUSE') {
+      this.stage.update();
+      if (this.shakeAmt > 0) this.shakeAmt *= 0.85;
+      this.particles.update();
+    }
 
     switch (this.state) {
       case 'TITLE': this.updateTitle(); break;
       case 'SELECT': this.updateSelect(); break;
       case 'BATTLE': this.updateBattle(); break;
+      case 'PAUSE': this.updatePause(); break;
       case 'RESULT': this.updateResult(); break;
     }
-    this.particles.update();
   }
 
   updateTitle() {
@@ -170,7 +174,7 @@ export class Game {
   }
 
   updateBattle() {
-    if (input.wasPressed('Escape')) { sfx.back(); this.state = 'TITLE'; return; }
+    if (input.wasPressed('Escape')) { sfx.back(); this.state = 'PAUSE'; this.pauseIndex = 0; return; }
 
     if (this.countdown > 0) {
       this.countdown--;
@@ -224,6 +228,26 @@ export class Game {
     }
   }
 
+  updatePause() {
+    const c1 = CONTROLS.p1;
+    const c2 = CONTROLS.p2;
+    if (input.wasPressed('Escape')) { sfx.back(); this.state = 'BATTLE'; return; }
+    
+    if (input.wasPressed(c1.up) || input.wasPressed('ArrowUp') || input.wasPressed(c2.up)) { this.pauseIndex = (this.pauseIndex + 2) % 3; sfx.select(); }
+    if (input.wasPressed(c1.down) || input.wasPressed('ArrowDown') || input.wasPressed(c2.down)) { this.pauseIndex = (this.pauseIndex + 1) % 3; sfx.select(); }
+    
+    if (input.wasPressed('Enter') || input.wasPressed('Space') || input.wasPressed(c1.light) || input.wasPressed(c2.light)) {
+      sfx.start();
+      if (this.pauseIndex === 0) {
+        this.state = 'BATTLE';
+      } else if (this.pauseIndex === 1) {
+        this.beginBattle();
+      } else if (this.pauseIndex === 2) {
+        this.state = 'TITLE';
+      }
+    }
+  }
+
   // ==========================================================================
   //  RENDER
   // ==========================================================================
@@ -243,6 +267,7 @@ export class Game {
       case 'TITLE': this.renderTitle(ctx); break;
       case 'SELECT': this.renderSelect(ctx); break;
       case 'BATTLE': this.renderBattle(ctx); break;
+      case 'PAUSE': this.renderBattle(ctx); this.renderPause(ctx); break;
       case 'RESULT': this.renderBattle(ctx); this.renderResult(ctx); break;
     }
     ctx.restore();
@@ -273,48 +298,82 @@ export class Game {
 
   drawHUD(ctx) {
     const n = this.fighters.length;
-    const boxW = 150, gap = 18;
-    const totalW = n * boxW + (n - 1) * gap;
-    let x = (GAME.WIDTH - totalW) / 2;
-    const y = GAME.HEIGHT - 64;
-
+    
     for (let i = 0; i < n; i++) {
       const f = this.fighters[i];
-      // panel
-      ctx.fillStyle = 'rgba(10,6,24,0.78)';
-      ctx.fillRect(x, y, boxW, 56);
+      const isP1 = i === 0;
+      
+      const boxW = 280;
+      const x = isP1 ? 30 : GAME.WIDTH - boxW - 30;
+      const y = 30;
+      
+      // background panel
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillRect(x, y, boxW, 58);
       ctx.strokeStyle = f.accentColor;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x + 0.5, y + 0.5, boxW - 1, 55);
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x + 1.5, y + 1.5, boxW - 3, 55);
 
-      // portrait swatch
+      // abstract portrait swatch
+      const portX = isP1 ? x + 10 : x + boxW - 42;
       ctx.fillStyle = f.char.palette.body;
-      ctx.fillRect(x + 6, y + 6, 28, 28);
+      ctx.fillRect(portX, y + 10, 32, 32);
       ctx.fillStyle = f.char.palette.trim;
-      ctx.fillRect(x + 6, y + 22, 28, 6);
+      ctx.fillRect(portX, y + 28, 32, 8);
       ctx.fillStyle = f.char.palette.eye;
-      ctx.fillRect(x + 22, y + 12, 4, 5);
-      ctx.fillRect(x + 28, y + 12, 4, 5);
+      ctx.fillRect(portX + 18, y + 14, 5, 6);
+      ctx.fillRect(portX + 24, y + 14, 5, 6);
 
-      // name + label
-      ctx.textAlign = 'left';
+      // names
+      ctx.textAlign = isP1 ? 'left' : 'right';
       ctx.fillStyle = f.accentColor;
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText(`${f.label} ${f.char.name}`, x + 40, y + 16);
+      ctx.font = 'bold 15px monospace';
+      
+      const textX = isP1 ? x + 50 : x + boxW - 50;
+      ctx.fillText(`${f.label} - ${f.char.name}`, textX, y + 22);
 
-      // damage %
-      const pct = Math.floor(f.damage);
-      const dmgColor = damageColor(f.damage);
-      ctx.fillStyle = f.dead ? '#555' : dmgColor;
-      ctx.font = 'bold 26px monospace';
-      ctx.fillText(f.dead ? 'OUT' : `${pct}%`, x + 40, y + 44);
+      if (f.dead) {
+        ctx.fillStyle = '#555';
+        ctx.font = 'bold 24px monospace';
+        ctx.fillText('OUT', textX, y + 48);
+      } else {
+        // health bar config
+        const maxDmg = 150;
+        const fillPct = Math.max(0, 1 - f.damage / maxDmg);
+        const barW = 180;
+        const barH = 16;
+        
+        const barX = isP1 ? x + 50 : x + boxW - 50 - barW;
+        
+        // border & bg
+        ctx.fillStyle = '#222';
+        ctx.fillRect(barX, y + 30, barW, barH);
+        
+        ctx.fillStyle = fillPct > 0.5 ? '#2ed573' : fillPct > 0.25 ? '#ffa502' : '#ff4757';
+        
+        const innerW = Math.max(0, Math.floor((barW - 2) * fillPct));
+        // fill towards center of screen
+        if (isP1) {
+            ctx.fillRect(barX + 1, y + 31, innerW, barH - 2);
+        } else {
+            ctx.fillRect(barX + barW - 1 - innerW, y + 31, innerW, barH - 2);
+        }
+        
+        // percentage badge
+        const pct = Math.floor(f.damage);
+        ctx.fillStyle = damageColor(f.damage);
+        ctx.font = 'bold 14px monospace';
+        const pctX = isP1 ? barX + barW + 8 : barX - 8;
+        ctx.textAlign = isP1 ? 'left' : 'right';
+        ctx.fillText(`${pct}%`, pctX, y + 43);
+      }
 
       // stock icons
       for (let s = 0; s < f.stocks; s++) {
         ctx.fillStyle = f.char.palette.body;
-        ctx.fillRect(x + boxW - 14 - s * 12, y + 8, 8, 8);
+        const sx = isP1 ? (x + 10 + s * 12) : (x + boxW - 10 - s * 12 - 8);
+        ctx.fillRect(sx, y + 46, 8, 8);
       }
-      x += boxW + gap;
     }
   }
 
@@ -437,10 +496,46 @@ export class Game {
     ctx.fillRect(x, y + 8, 7, h - 8);
   }
 
+  // ---- PAUSE ----
+  renderPause(ctx) {
+    const cx = GAME.WIDTH / 2;
+    const cy = GAME.HEIGHT / 2;
+
+    // Dark overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
+
+    // Pause menu box
+    const bw = 300, bh = 240;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(cx - bw / 2, cy - bh / 2, bw, bh);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(cx - bw / 2, cy - bh / 2, bw, bh);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px monospace';
+    ctx.fillText('PAUSED', cx, cy - 60);
+
+    const opts = ['RESUME', 'RESTART MATCH', 'MAIN MENU'];
+    for (let i = 0; i < opts.length; i++) {
+      if (this.pauseIndex === i) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(cx - 100, cy - 20 + i * 45 - 20, 200, 32);
+        ctx.fillStyle = '#0f172a';
+      } else {
+        ctx.fillStyle = '#94a3b8';
+      }
+      ctx.font = 'bold 20px monospace';
+      ctx.fillText(opts[i], cx, cy - 20 + i * 45 + 4);
+    }
+  }
+
   // ---- RESULT ----
   renderResult(ctx) {
     if (this.resultTimer < 30) return;
-    ctx.fillStyle = 'rgba(6,3,16,0.72)';
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
     ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
     ctx.textAlign = 'center';
     const cx = GAME.WIDTH / 2;
@@ -450,18 +545,18 @@ export class Game {
       ctx.font = 'bold 22px monospace';
       ctx.fillText(`${this.winner.label} WINS`, cx, 150);
       this.drawPortrait(ctx, this.winner.char, cx, 180, 3);
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = '#1d3a8a';
       ctx.font = 'bold 48px monospace';
       ctx.fillText(this.winner.char.name + '!', cx, 360);
     } else {
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = '#1d3a8a';
       ctx.font = 'bold 48px monospace';
       ctx.fillText('DRAW!', cx, 280);
     }
 
     const blink = Math.floor(this.t / 30) % 2 === 0;
     if (blink) {
-      ctx.fillStyle = '#ffd23f';
+      ctx.fillStyle = '#ff5d2e';
       ctx.font = 'bold 18px monospace';
       ctx.fillText('ENTER = REMATCH      ESC = MENU', cx, 440);
     }

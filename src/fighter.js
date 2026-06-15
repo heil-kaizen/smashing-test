@@ -7,7 +7,8 @@
 //             light:bool(edge), heavy:bool(edge), special:bool(edge),
 //             shield:bool(held) }
 // ============================================================================
-import { PHYS, ATTACKS, RULES, BLAST, GAME, TROLL_FRAMES } from './config.js';
+import { PHYS, ATTACKS, RULES, BLAST, GAME } from './config.js';
+import { SPRITE_FRAMES } from './frames.js';
 
 // extra attack defs not in the shared table
 const DASH = { name: 'dash', startup: 3, active: 11, recovery: 16, damage: 9, baseKB: 6.0, kbScaling: 0.095, angle: -34, hbw: 46, hbh: 44, reach: 6, hitlag: 8 };
@@ -122,6 +123,12 @@ export class Fighter {
     this.onGround = false;
 
     world.particles.hitSpark(contactX, contactY, heavy);
+    
+    // Spawn floating damage text
+    const dmgText = Math.floor(def.damage).toString();
+    const dmgColor = heavy ? '#ff4757' : '#ffa502';
+    world.particles.spawnText(contactX, contactY - 20, dmgText, dmgColor);
+
     world.shake(heavy ? 9 : 5);
     heavy ? world.sfx.hitHeavy() : world.sfx.hitLight();
   }
@@ -457,9 +464,12 @@ export class Fighter {
   drawSprite(ctx, px, py) {
     this.animTimer++;
     
+    const framesData = SPRITE_FRAMES[this.char.id];
+    if (!framesData) return; // shouldn't happen, but just in case
+    
     let row = 0;
     let speed = 8;
-    let framesCount = TROLL_FRAMES[0].length;
+    let framesCount = framesData[0].length;
 
     if (this.dead || this.respawnAnim > 0) {
       row = 9; speed = 12;
@@ -476,7 +486,7 @@ export class Fighter {
       } else {
         row = 3;
       }
-      framesCount = TROLL_FRAMES[row].length;
+      framesCount = framesData[row].length;
       // sync animation with attack timer
       const a = this.attack;
       const total = a.def.startup + a.def.active + a.def.recovery;
@@ -491,7 +501,11 @@ export class Fighter {
       }
     }
 
-    framesCount = TROLL_FRAMES[row].length;
+    // Default bounds check
+    if (!framesData[row] || framesData[row].length === 0) {
+        row = 0;
+    }
+    framesCount = framesData[row].length;
 
     if (!this.attack) { // Auto-loop for non-attacks
       if (this.animTimer >= speed) {
@@ -505,24 +519,15 @@ export class Fighter {
     // Safety clamp for frame
     if (this.animFrame >= framesCount) this.animFrame = 0;
 
-    const frameRect = TROLL_FRAMES[row][this.animFrame];
+    const frameRect = framesData[row][this.animFrame];
     const sx = frameRect.x;
     const sy = frameRect.y;
     const sw = frameRect.w;
     const sh = frameRect.h;
 
-    // We want the draw height to be roughly consistent.
-    // The sprite's logical height is this.h (46), but trolls are drawn with 
-    // a lot of padding in the sprite. Let's scale up to visual size.
-    // Let's assume an average troll body is roughly ~180px high in the source.
-    const TARGET_H = 74;
-    const scale = TARGET_H / sh;
-    
-    // Some troll frames (like idle) are very tall because of extra padding,
-    // so let's lock the base scale to the average frame height for consistency,
-    // rather than scaling every frame individually which causes jitter.
-    const averageFrameHeight = 220; 
-    const finalScale = TARGET_H / averageFrameHeight;
+    // Scale relative to the generated image grid.
+    // They are all generated on ~1700x2500 sheets, so relative scale is captured in source frame size.
+    const finalScale = 0.30; 
     
     const destW = sw * finalScale;
     const destH = sh * finalScale;
@@ -539,18 +544,23 @@ export class Fighter {
     ctx.fillRect(px - 2, py + this.h - 2, this.w + 4, 4);
     ctx.globalAlpha = blendAlpha(this);
 
+    // Use pre-computed origin offsets if available to perfectly anchor giant attack frames.
+    const ox = (frameRect.ox !== undefined ? frameRect.ox : sw/2) * finalScale;
+    const oy = (frameRect.oy !== undefined ? frameRect.oy : sh) * finalScale;
+
     // To align properly, we draw upwards from the feet.
-    // We want the feet of the troll sprite to touch the bottom of the bounding box.
     const bottomY = this.h;
     
-    // flip if facing left
+    // We want the character's logical body center (w/2) to line up with the sprite's root X origin (ox).
+    // The sprite's root Y origin (oy) lines up with the bottom of the feet (bottomY + 6 padding for shadows).
+    
     if (this.facing < 0) {
-      ctx.translate(px + this.w, py);
+      ctx.translate(px + this.w / 2, py + bottomY + 6);
       ctx.scale(-1, 1);
-      ctx.drawImage(this.img, sx, sy, sw, sh, -(destW - this.w)/2, bottomY - destH + 6, destW, destH);
+      ctx.drawImage(this.img, sx, sy, sw, sh, -ox, -oy, destW, destH);
     } else {
-      ctx.translate(px, py);
-      ctx.drawImage(this.img, sx, sy, sw, sh, -(destW - this.w)/2, bottomY - destH + 6, destW, destH);
+      ctx.translate(px + this.w / 2, py + bottomY + 6);
+      ctx.drawImage(this.img, sx, sy, sw, sh, -ox, -oy, destW, destH);
     }
     ctx.restore();
   }

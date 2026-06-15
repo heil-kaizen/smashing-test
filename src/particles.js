@@ -49,6 +49,19 @@ export class Particles {
     this.list.push({ x, y, vx: 0, vy: 0, life: 12, maxLife: 12, size: 4, color, gravity: 0 });
   }
 
+  spawnText(x, y, txt, color = '#ff4757') {
+    this.list.push({
+      x, y, txt,
+      vx: (Math.random() - 0.5) * 2,
+      vy: -4 - Math.random() * 2,
+      life: 40, maxLife: 40,
+      size: 16 + Math.random() * 4,
+      color,
+      gravity: 0.15,
+      isText: true
+    });
+  }
+
   update() {
     for (let i = this.list.length - 1; i >= 0; i--) {
       const p = this.list[i];
@@ -60,10 +73,20 @@ export class Particles {
 
   draw(ctx) {
     for (const p of this.list) {
-      ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
-      ctx.fillStyle = p.color;
-      const s = p.size;
-      ctx.fillRect(Math.round(p.x - s / 2), Math.round(p.y - s / 2), Math.ceil(s), Math.ceil(s));
+      if (p.isText) {
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 10)); // fade out fast at the end
+        ctx.fillStyle = p.color;
+        ctx.font = `bold ${Math.round(p.size)}px monospace`;
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.strokeText(p.txt, Math.round(p.x), Math.round(p.y));
+        ctx.fillText(p.txt, Math.round(p.x), Math.round(p.y));
+      } else {
+        ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+        ctx.fillStyle = p.color;
+        const s = p.size;
+        ctx.fillRect(Math.round(p.x - s / 2), Math.round(p.y - s / 2), Math.ceil(s), Math.ceil(s));
+      }
     }
     ctx.globalAlpha = 1;
   }

@@ -50,13 +50,13 @@ export class Stage {
     // --- sun with soft glow ---
     const sunX = 120, sunY = 96;
     const halo = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 130);
-    halo.addColorStop(0, 'rgba(255,80,50,0.9)');
-    halo.addColorStop(1, 'rgba(255,80,50,0)');
+    halo.addColorStop(0, 'rgba(255,240,150,0.9)');
+    halo.addColorStop(1, 'rgba(255,240,150,0)');
     ctx.fillStyle = halo;
     ctx.fillRect(0, 0, 320, 280);
-    ctx.fillStyle = '#ff2222';
+    ctx.fillStyle = '#FFF8D6';
     ctx.beginPath(); ctx.arc(sunX, sunY, 36, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#aa0000';
+    ctx.fillStyle = '#FFE066';
     ctx.beginPath(); ctx.arc(sunX, sunY, 30, 0, Math.PI * 2); ctx.fill();
 
     // --- city skyline along the horizon ---
@@ -64,13 +64,13 @@ export class Stage {
     for (const b of this.buildings) {
       const top = horizon - b.h;
       // body (dark silhouettes)
-      ctx.fillStyle = `rgba(${Math.round(20 * b.tone)},${Math.round(10 * b.tone)},${Math.round(15 * b.tone)},0.95)`;
+      ctx.fillStyle = `rgba(${160 + Math.round(20 * b.tone)},${180 + Math.round(20 * b.tone)},${200 + Math.round(15 * b.tone)},0.95)`;
       ctx.fillRect(b.x, top, b.w, b.h);
       // lighter top edge
-      ctx.fillStyle = 'rgba(255,100,100,0.15)';
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
       ctx.fillRect(b.x, top, b.w, 3);
       // windows
-      ctx.fillStyle = 'rgba(255,100,50,0.3)';
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
       for (let wy = top + 8; wy < horizon - 6; wy += 12) {
         for (let wx = b.x + 5; wx < b.x + b.w - 5; wx += 11) {
           if ((wx + wy + b.x) % 3 !== 0) ctx.fillRect(wx, wy, 5, 6);
@@ -95,16 +95,16 @@ export class Stage {
   }
 
   drawCloud(ctx, x, y, s) {
-    ctx.fillStyle = 'rgba(70,30,40,0.8)';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
     const puff = (dx, dy, r) => { ctx.beginPath(); ctx.arc(x + dx * s, y + dy * s, r * s, 0, Math.PI * 2); ctx.fill(); };
     puff(0, 0, 18); puff(20, 4, 14); puff(-20, 4, 14); puff(8, -10, 13); puff(-10, -8, 12);
-    ctx.fillStyle = 'rgba(70,30,40,0.8)';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.fillRect(x - 26 * s, y + 2 * s, 54 * s, 12 * s);
   }
 
   drawHills(ctx, horizon) {
     // far hill
-    ctx.fillStyle = '#1c0a12';
+    ctx.fillStyle = '#5DBA6D';
     ctx.beginPath();
     ctx.moveTo(0, horizon + 20);
     for (let x = 0; x <= GAME.WIDTH; x += 20) {
@@ -112,7 +112,7 @@ export class Stage {
     }
     ctx.lineTo(GAME.WIDTH, GAME.HEIGHT); ctx.lineTo(0, GAME.HEIGHT); ctx.closePath(); ctx.fill();
     // near hill (darker, ground fill)
-    ctx.fillStyle = '#0a0306';
+    ctx.fillStyle = '#4CA15A';
     ctx.beginPath();
     ctx.moveTo(0, horizon + 36);
     for (let x = 0; x <= GAME.WIDTH; x += 20) {
@@ -124,14 +124,14 @@ export class Stage {
   drawTree(ctx, x, y, s) {
     const w = 10 * s, h = 26 * s;
     // trunk
-    ctx.fillStyle = '#0f0508';
+    ctx.fillStyle = '#6E4E32';
     ctx.fillRect(x - w * 0.18, y - h * 0.5, w * 0.36, h * 0.6);
     // canopy (chunky pixel leaves)
-    ctx.fillStyle = '#260a14';
+    ctx.fillStyle = '#228B22';
     ctx.beginPath(); ctx.arc(x, y - h * 0.7, 16 * s, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(x - 12 * s, y - h * 0.55, 11 * s, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(x + 12 * s, y - h * 0.55, 11 * s, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#3a0f1e';
+    ctx.fillStyle = '#006400';
     ctx.beginPath(); ctx.arc(x - 4 * s, y - h * 0.85, 9 * s, 0, Math.PI * 2); ctx.fill();
   }
 
@@ -140,34 +140,34 @@ export class Stage {
       const p = STAGE.platforms[i];
       if (p.passable) {
         // floating grassy ledge on a wooden base
-        ctx.fillStyle = '#220810';            // wood
+        ctx.fillStyle = '#8B5A2B';            // wood
         ctx.fillRect(p.x, p.y + 4, p.w, p.h - 2);
-        ctx.fillStyle = '#110206';
+        ctx.fillStyle = '#5A3A1B';
         ctx.fillRect(p.x, p.y + p.h, p.w, 4);
-        ctx.fillStyle = '#4a1122';            // dark grass
+        ctx.fillStyle = '#7CFC00';            // bright grass
         ctx.fillRect(p.x, p.y, p.w, 6);
-        ctx.fillStyle = '#63152c';
+        ctx.fillStyle = '#32CD32';
         ctx.fillRect(p.x, p.y, p.w, 2);
-        this.grassBlades(ctx, p.x, p.y, p.w, '#63152c');
+        this.grassBlades(ctx, p.x, p.y, p.w, '#32CD32');
       } else {
         // main ground: dirt body + grassy top
-        ctx.fillStyle = '#1f0810';            // dark earth
+        ctx.fillStyle = '#8B6A4F';            // warm earth
         ctx.fillRect(p.x, p.y, p.w, p.h);
         // dirt speckles
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
         for (let gx = p.x + 10; gx < p.x + p.w; gx += 22) {
           for (let gy = p.y + 22; gy < p.y + p.h; gy += 20) {
             ctx.fillRect(gx + ((gy / 20) % 2) * 8, gy, 4, 4);
           }
         }
         // grass top (two-tone)
-        ctx.fillStyle = '#3d0a19';
+        ctx.fillStyle = '#7CFC00';
         ctx.fillRect(p.x, p.y, p.w, 12);
-        ctx.fillStyle = '#591024';
+        ctx.fillStyle = '#32CD32';
         ctx.fillRect(p.x, p.y, p.w, 5);
-        this.grassBlades(ctx, p.x, p.y, p.w, '#591024');
+        this.grassBlades(ctx, p.x, p.y, p.w, '#32CD32');
         // soft shadow under the lip
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.fillRect(p.x, p.y + 12, p.w, 3);
       }
     }

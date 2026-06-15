@@ -45,8 +45,8 @@ export const BLAST = {
 // --- The stage ---------------------------------------------------------------
 // platforms: {x, y, w, passable}. y is the TOP surface fighters stand on.
 export const STAGE = {
-  name: 'NIGHTMARE ARENA',
-  bg: ['#2e0c18', '#631526', '#a51c30'],
+  name: 'SUNNY PARK',
+  bg: ['#67B8EB', '#B9E4FB', '#E0F4FF'],
   platforms: [
     { x: 170, y: 410, w: 620, h: 220, passable: false }, // main ground
     { x: 250, y: 300, w: 160, h: 14, passable: true },   // left float
@@ -113,64 +113,7 @@ function mk(o) {
   }, o);
 }
 
-export const TROLL_FRAMES = [
-  [ // 0: Idle
-    { "x": 260, "y": 48,  "w": 143, "h": 265 },
-    { "x": 491, "y": 48,  "w": 145, "h": 266 },
-    { "x": 714, "y": 48,  "w": 145, "h": 266 }
-  ],
-  [ // 1: Walk
-    { "x": 265, "y": 365, "w": 165, "h": 235 },
-    { "x": 491, "y": 365, "w": 165, "h": 239 },
-    { "x": 728, "y": 365, "w": 155, "h": 234 },
-    { "x": 949, "y": 365, "w": 163, "h": 234 },
-    { "x": 1176,"y": 365, "w": 167, "h": 238 }
-  ],
-  [ // 2: Run
-    { "x": 307, "y": 673, "w": 240, "h": 167 },
-    { "x": 582, "y": 678, "w": 248, "h": 161 },
-    { "x": 866, "y": 674, "w": 245, "h": 162 },
-    { "x": 1152,"y": 671, "w": 240, "h": 168 },
-    { "x": 1428,"y": 672, "w": 246, "h": 166 }
-  ],
-  [ // 3: Punch
-    { "x": 265, "y": 893, "w": 202, "h": 213 },
-    { "x": 507, "y": 890, "w": 218, "h": 217 },
-    { "x": 745, "y": 887, "w": 230, "h": 220 },
-    { "x": 988, "y": 886, "w": 235, "h": 220 }
-  ],
-  [ // 4: Kick
-    { "x": 505, "y": 1156,"w": 207, "h": 264 },
-    { "x": 747, "y": 1156,"w": 226, "h": 264 },
-    { "x": 1002,"y": 1156,"w": 222, "h": 225 }
-  ],
-  [ // 5: Special
-    { "x": 470, "y": 1400,"w": 516, "h": 233 },
-    { "x": 1000,"y": 1421,"w": 222, "h": 209 },
-    { "x": 1270,"y": 1438,"w": 149, "h": 190 },
-    { "x": 1503,"y": 1438,"w": 148, "h": 190 }
-  ],
-  [ // 6: Block
-    { "x": 300, "y": 1679,"w": 138, "h": 173 },
-    { "x": 533, "y": 1679,"w": 147, "h": 208 }
-  ],
-  [ // 7: Hit
-    { "x": 311, "y": 1892,"w": 161, "h": 171 },
-    { "x": 540, "y": 1881,"w": 197, "h": 183 },
-    { "x": 819, "y": 1879,"w": 195, "h": 185 }
-  ],
-  [ // 8: Win
-    { "x": 525, "y": 2105,"w": 156, "h": 210 },
-    { "x": 742, "y": 2104,"w": 162, "h": 210 },
-    { "x": 974, "y": 2102,"w": 145, "h": 212 }
-  ],
-  [ // 9: Loss
-    { "x": 333, "y": 2381,"w": 223, "h": 143 },
-    { "x": 616, "y": 2386,"w": 225, "h": 135 },
-    { "x": 875, "y": 2414,"w": 238, "h": 106 }
-  ]
-];
-
+// SPRITE_FRAMES are now in frames.js
 export const CHARACTERS = [
   mk({
     id: 'doge', name: 'DOGE',
@@ -194,12 +137,14 @@ export const CHARACTERS = [
     id: 'wojak', name: 'WOJAK',
     palette: { body: '#dfe6ec', accent: '#b8c2cc', eye: '#2b2b2b', trim: '#9aa7b3' },
     weight: 100, speedMult: 1.0, jumpMult: 1.04, dmgMult: 1.0, special: 'projectile',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Wojak-sprite.webp',
     blurb: 'Just wants to fight.',
   }),
   mk({
     id: 'shiba', name: 'SHIBA',
     palette: { body: '#f0913a', accent: '#cf7322', eye: '#2b2b2b', trim: '#ffe0b8' },
     weight: 90, speedMult: 1.18, jumpMult: 1.1, dmgMult: 0.94, special: 'dash',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Shiba-sprite.webp',
     blurb: 'Quick lil floof.',
   }),
   mk({
@@ -210,16 +155,18 @@ export const CHARACTERS = [
     blurb: 'Problem?',
   }),
   mk({
-    id: 'pump', name: 'PUMP',
-    palette: { body: '#3ad17a', accent: '#23a85c', eye: '#ffffff', trim: '#0e6b39' },
+    id: 'whale', name: 'WHALE',
+    palette: { body: '#ffffff', accent: '#bce4f5', eye: '#0b1626', trim: '#6fd2f5' },
     weight: 112, speedMult: 0.95, jumpMult: 1.0, dmgMult: 1.18, special: 'projectile',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/whitewhale-sprite.webp',
     blurb: 'Number go up.',
   }),
   mk({
-    id: 'nyan', name: 'NYAN',
-    palette: { body: '#9aa0b5', accent: '#7a7fa0', eye: '#ff5da2', trim: '#ff5da2' },
-    weight: 84, speedMult: 1.08, jumpMult: 1.2, dmgMult: 0.9, special: 'projectile',
-    blurb: 'Floaty rainbow chaos.',
+    id: 'alon', name: 'ALON',
+    palette: { body: '#ffffff', accent: '#cccccc', eye: '#111111', trim: '#999999' },
+    weight: 90, speedMult: 1.15, jumpMult: 1.1, dmgMult: 0.95, special: 'projectile',
+    sprite: 'https://raw.githubusercontent.com/heil-kaizen/assets-for-smashfun/main/Alon-sprite.webp',
+    blurb: 'Fast and versatile combatant.',
   }),
 ];
 
